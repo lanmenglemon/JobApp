@@ -1,0 +1,40 @@
+<h1>Search jobs</h1>
+<div ng-controller="searchController">
+    
+    <div class="dropdown">
+      <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+        Search by
+        <span class="caret"></span>
+      </button>
+      <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+        <li><a ng-click="searchBy($event)" name="title">Title</a></li>
+        <li><a ng-click="searchBy($event)" name="keywords">Keywords</a></li>
+        <li><a ng-click="searchBy($event)" name="location">Location</a></li>
+      </ul>
+    </div>
+
+    <input type="text" class="input-sm" ng-model="filter_keyword"/>
+    <input class="btn btn-default" type="button" ng-click="search()" value="Search"/>
+    <input class="btn btn-default" type="button" ng-click="reset()" value="Reset"/><br /><br />
+
+    <table class="table table-hover table-bordered">
+      <tr>
+        <th>#</th>
+        <th>Job Title</th>
+        <th>Job Description</th>
+        <th>Job Location</th>
+        <th>Operation</th>
+      </tr>
+      <tr ng-repeat="job in jobs | filter:filterFn">
+        <td>{{$index + 1}}</td>
+        <td>{{job.title}}</td>
+        <td>{{job.description}}</td>
+        <td>{{job.location}}</td>
+        <td>
+          <input class="btn-primary" type="button" value="Save" />
+          <input class="btn-primary" type="button" value="Apply" />
+        </td>
+      </tr>
+    </table>
+
+</div>

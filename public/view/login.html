@@ -1,0 +1,9 @@
+<h1>Login</h1>
+<div ng-controller="loginController">
+    <form>
+        <input ng-model="loginForm.username" type="text" name="username" placeholder="Username" /><br /><br />
+        <input ng-model="loginForm.password" type="text" name="password" placeholder="Password" /><br /><br />
+        <button type="button" ng-click="login()" >Login</button>
+        <button type="button" ng-click="gotosignup()" >Sign up</button><br /><br />
+    </form>
+</div>
