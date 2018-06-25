@@ -25,12 +25,18 @@ app.config(function($routeProvider) {
         templateUrl: '/view/postJob.html',
         controller: 'postController',
         resolve: ['authService', function(authService) {
-            return authService.checkUserType();
+            return authService.checkIfCompany();
         }]
     })
     .when('/searchjob', {
         templateUrl: '/view/searchJob.html',
         controller: 'searchController',
+        resolve: ['authService', function(authService) {
+            return authService.checkIfSeeker();
+        }]
+    })
+    .otherwise({
+        redirectTo: '/',
         resolve: ['authService', function(authService) {
             return authService.checkIfLoggedIn();
         }]
@@ -50,8 +56,10 @@ app.controller('myappController', function($scope, $rootScope, $http, $location)
         $scope.isLoggedIn = true;
         if (JSON.parse(localStorage.active_user).type === "company") {
             $scope.isCompany = true;
+            $scope.isSeeker = false;
         } else {
             $scope.isCompany = false;
+            $scope.isSeeker = true;
         }
     } else {
         $scope.isLoggedIn = false;
@@ -69,6 +77,7 @@ app.controller('myappController', function($scope, $rootScope, $http, $location)
 
     $rootScope.$on('userTypeChanged', function (event, args) {
         $scope.isCompany = args === "company";
+        $scope.isSeeker = args !== "company";
     });
 
     $rootScope.$on('userLoggedIn', function (event, args) {
@@ -77,6 +86,7 @@ app.controller('myappController', function($scope, $rootScope, $http, $location)
 
     $scope.$on('userTypeChanged', function (event, args) {
         $scope.isCompany = args === "company";
+        $scope.isSeeker = args !== "company";
     });
 
     $scope.$on('userLoggedIn', function (event, args) {
@@ -87,6 +97,8 @@ app.controller('myappController', function($scope, $rootScope, $http, $location)
 app.controller('signupController', function($scope, $location, $http) {
     $scope.signup = function() {
         $scope.signupForm.isLoggedIn = false;
+        $scope.signupForm.savedJobs = [ ];
+        $scope.signupForm.appliedJobs = [ ];
         $http.post('http://localhost:3000/userSignup', $scope.signupForm).then(function (resp) {
             if (resp.data.flg) {
                 alert('Sign up successfully!')
@@ -139,35 +151,24 @@ app.controller('postController', function($scope, $http, $window) {
 app.controller('searchController', function($scope, $location, $http, $sce) {
     $(function(){
         $(".dropdown-menu li a").click(function(){
-            $(".btn:first-child").text($(this).text() + ' ');
-            $(".btn:first-child").append('<span class="caret"></span>');
-            $(".btn:first-child").val($(this).text());
+            $("#dropdownMenu1").text($(this).text() + ' ');
+            $("#dropdownMenu1").append('<span class="caret"></span>');
+            $("#dropdownMenu1").val($(this).text());
         });
     });
 
-    $http.get('http://localhost:3000/getjobs').then(function(resp) {
-        $scope.jobs = resp.data;
-    });
 
     $scope.searchBy = function($event) {
         $scope.by = $event.target.name;
-        console.log($scope.by);
     };
 
 
     $scope.search = function () {
         if (typeof $scope.by != 'undefined' && $scope.by !== "") {
-            $scope.filterFn = function (job) {
-                if ($scope.filter_keyword === "") {
-                    return true;
-                }
-                else {
-                    if(job[$scope.by].toLowerCase().indexOf($scope.filter_keyword.toLowerCase()) != -1) {
-                        return true;
-                    }
-                    return false;
-                }
-            }
+            $scope.query = [ $scope.by, $scope.filter_keyword ];
+            $http.post('http://localhost:3000/searchjobs', $scope.query).then(function(resp) {
+                $scope.jobs = resp.data;
+            });
         }
         else {
             alert('Please select a search option!');
@@ -180,17 +181,70 @@ app.controller('searchController', function($scope, $location, $http, $sce) {
         $(".btn:first-child").append('<span class="caret"></span>');
         $scope.by = "";
     }
+
+    $scope.saveJob = function (args) {
+        $scope.saveObj = {
+            "id": args,
+            "userId": JSON.parse(localStorage.active_user)._id
+        };
+        $http.post('http://localhost:3000/savejob', $scope.saveObj).then(function(resp) {
+            if (resp.data.length !== 0) {
+                localStorage.active_user = JSON.stringify(resp.data[0]);
+                document.getElementById('save_' + args).outerHTML = '<input ng-if="checkJobId(job._id)" class="btn btn-primary" disabled="disabled" id="save_{{job._id}}" type="button" value="Saved" ng-click="saveJob(job._id)" />';
+            };
+        });
+    }
+
+    $scope.applyJob = function (args) {
+        $scope.applyObj = {
+            "id": args,
+            "userId": JSON.parse(localStorage.active_user)._id
+        };
+        $http.post('http://localhost:3000/applyjob', $scope.applyObj).then(function(resp) {
+            if (resp.data.length !== 0) {
+                localStorage.active_user = JSON.stringify(resp.data[0]);
+                document.getElementById('apply_' + args).outerHTML = '<input ng-if="checkIfApplied(job._id)" class="btn btn-primary" disabled="disabled" id="apply_{{job._id}}" type="button" value="Applied" ng-click="applyJob(job._id)" />';
+            };
+        });
+    }
+
+    $scope.$on('$viewContentLoaded', function(){
+        $scope.savedJobs = JSON.parse(localStorage.active_user).savedJobs;
+        $scope.appliedJobs = JSON.parse(localStorage.active_user).appliedJobs;
+    });
+
+    $scope.checkIfSaved = function(id) {
+        if (typeof $scope.savedJobs !== 'undefined' && $scope.savedJobs.includes(id)) {
+            return true;
+        }
+        return false;
+    }
+
+    $scope.checkIfApplied = function(id) {
+        if (typeof $scope.appliedJobs !== 'undefined' && $scope.appliedJobs.includes(id)) {
+            return true;
+        }
+        
+        return false;
+    }
+
+    $scope.showSavedJobs = function () {
+        $scope.savedJobs = JSON.parse(localStorage.active_user).savedJobs;
+        $http.post('http://localhost:3000/findjob', $scope.savedJobs).then(function (resp) {
+            $scope.jobs = resp.data;
+        });
+        
+    }
+
+    $scope.showAppliedJobs = function () {
+        $scope.appliedJobs = JSON.parse(localStorage.active_user).appliedJobs;
+        $http.post('http://localhost:3000/findjob', $scope.appliedJobs).then(function (resp) {
+            $scope.jobs = resp.data;
+        });
+    }
 });
 
-app.filter('jobFilter', function(){
-    return function(data, keyword) {
-        return (keyword) ? data.filter((job, index) => {
-            if(job.title.toLowerCase().indexOf(keyword.toLowerCase()) != -1) {
-                return true;
-            }
-        }) : data;
-    };
-});
+
 
 app.factory('dataService', function($http) {
     return {
@@ -237,7 +291,7 @@ app.factory('authService', ['$location', 'dataService','$rootScope', function($l
                 }
             });
         },
-        'checkUserType': function() {
+        'checkIfCompany': function() {
             dataService.getData(function() {
                 if (localStorage.active_user !== "" && JSON.parse(localStorage.active_user).isLoggedIn) {
                     $rootScope.$emit('userLoggedIn', true);
@@ -255,6 +309,25 @@ app.factory('authService', ['$location', 'dataService','$rootScope', function($l
                     return false;
                 }
             });
-        }
+        },
+        'checkIfSeeker': function() {
+            dataService.getData(function() {
+                if (localStorage.active_user !== "" && JSON.parse(localStorage.active_user).isLoggedIn) {
+                    $rootScope.$emit('userLoggedIn', true);
+                    $rootScope.$emit('userTypeChanged', JSON.parse(localStorage.active_user).type);
+                    if(JSON.parse(localStorage.active_user).type !== "company") {
+                        return true;
+                    }
+                    else {
+                        $location.path('/');
+                        return false;
+                    }
+                } else {
+                    $rootScope.$emit('userLoggedIn', false);
+                    $location.path('/login');
+                    return false;
+                }
+            });
+        },
     }
 }]);

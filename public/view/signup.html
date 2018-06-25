@@ -1,17 +1,29 @@
-<h1>Sign Up</h1>
-<div ng-controller="signupController">
-    <form>
-        <input ng-model="signupForm.username" type="text" name="username" placeholder="Username" /><br /><br />
-        <input ng-model="signupForm.password" type="text" name="password" placeholder="Password" /><br /><br />
-        <input ng-model="signupForm.email" type="text" name="email" placeholder="Email" /><br /><br />
-        <input ng-model="signupForm.location" type="text" name="location" placeholder="Location" /><br /><br />
-        <input ng-model="signupForm.phone" type="number" name="phone" placeholder="Phone" /><br /><br />
-        <div>
+<div class="row">
+    <h1 class="text-center">Sign Up</h1><br />
+    <div class="col-md-4"></div>
+    <div ng-controller="signupController" class="col-md-4">
+        <form class="form-group">
+            <input class="form-control" ng-model="signupForm.username" type="text" name="username" placeholder="Username" /><br /><br />
+            <input class="form-control" ng-model="signupForm.password" type="text" name="password" placeholder="Password" /><br /><br />
+            <input class="form-control" ng-model="signupForm.email" type="text" name="email" placeholder="Email" /><br /><br />
+            <input class="form-control" ng-model="signupForm.location" type="text" name="location" placeholder="Location" /><br /><br />
+            <input class="form-control" ng-model="signupForm.phone" type="number" name="phone" placeholder="Phone" /><br />
+            
             Type : <br />
-            <input ng-model="signupForm.type" type="radio" value="company" name="type"/>Company
-            <input ng-model="signupForm.type" type="radio" value="jobSeeker" name="type"/>Job seeker<br /><br />
-        </div>
-        <button ng-click="signup()" >Sign up</button>
-        <button ng-click="gotologin()" >Cancel</button><br /><br />
-    </form>
+            <div class="input-group">
+                <span class="input-group-addon">
+                    <input type="radio" aria-label="..." ng-model="signupForm.type" value="company" name="type"/> Company
+                </span>
+                <span class="input-group-addon">
+                    <input type="radio" aria-label="..." ng-model="signupForm.type" value="jobSeeker" name="type"/> Job seeker
+                </span>
+            </div>
+            <br />
+            <div class="text-center">
+                <button class="btn btn-primary" ng-click="signup()" >Sign up</button>
+                <button class="btn btn-primary" ng-click="gotologin()" >Cancel</button><br /><br />
+            </div>
+        </form>
+    </div>
+    <div class="col-md-4"></div>
 </div>

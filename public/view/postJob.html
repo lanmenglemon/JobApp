@@ -1,10 +1,16 @@
-<h1>Post a job</h1>
-<div ng-controller="postController">
-    <form>
-        <input ng-model="postForm.title" type="text" name="title" placeholder="Job Title" /><br /><br />
-        <input ng-model="postForm.description" type="text" name="description" placeholder="Job Description" /><br /><br />
-        <input ng-model="postForm.keywords" type="text" name="keywords" placeholder="Keywords" /><br /><br />
-        <input ng-model="postForm.location" type="text" name="location" placeholder="Location" /><br /><br />
-        <button ng-click="postJob()">Save</button>
-    </form>
+<div class="row">
+    <h1 class="text-center">Post a job</h1>
+    <div class="col-md-4"></div>
+    <div ng-controller="postController" class="col-md-4">
+        <form class="form-group">
+            <input class="form-control" ng-model="postForm.title" type="text" name="title" placeholder="Job Title" /><br /><br />
+            <input class="form-control" ng-model="postForm.description" type="text" name="description" placeholder="Job Description" /><br /><br />
+            <input class="form-control" ng-model="postForm.keywords" type="text" name="keywords" placeholder="Keywords" /><br /><br />
+            <input class="form-control" ng-model="postForm.location" type="text" name="location" placeholder="Location" /><br /><br />
+            <div class="text-center">
+                <button class="btn btn-primary" ng-click="postJob()">Save</button>
+            </div>
+        </form>
+    </div>
+    <div class="col-md-4"></div>
 </div>

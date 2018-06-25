@@ -1,5 +1,5 @@
 <nav class="navbar navbar-default">
-    <div class="container-fluid">
+    <div class="container">
       <!-- Brand and toggle get grouped for better mobile display -->
       <div class="navbar-header">
         <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
@@ -18,9 +18,9 @@
             <li><a href="#/signup" ng-if="!isLoggedIn">Sign up</a></li>
             <li><a href="#/" ng-if="isLoggedIn">Homepage</a></li>
             <li><a href="#/postjob" ng-if="isCompany && isLoggedIn">Post a job</a></li>
-            <li><a href="#/searchjob" ng-if="isLoggedIn">Search jobs</a></li>
+            <li><a href="#/searchjob" ng-if="isSeeker &&isLoggedIn">Search jobs</a></li>
             <li><a href ng-click="logout()" ng-if="isLoggedIn">Log out</a></li>
         </ul>
       </div><!-- /.navbar-collapse -->
     </div><!-- /.container-fluid -->
-  </nav>
+</nav>

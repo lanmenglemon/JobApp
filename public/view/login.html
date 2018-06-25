@@ -1,9 +1,15 @@
-<h1>Login</h1>
-<div ng-controller="loginController">
-    <form>
-        <input ng-model="loginForm.username" type="text" name="username" placeholder="Username" /><br /><br />
-        <input ng-model="loginForm.password" type="text" name="password" placeholder="Password" /><br /><br />
-        <button type="button" ng-click="login()" >Login</button>
-        <button type="button" ng-click="gotosignup()" >Sign up</button><br /><br />
-    </form>
+<div class="row">
+    <h1 class="text-center">Login</h1><br />
+    <div class="col-md-4"></div>
+    <div ng-controller="loginController" class="col-md-4">
+        <form class="form-group">
+            <input class="form-control" ng-model="loginForm.username" type="text" name="username" placeholder="Username" /><br /><br />
+            <input class="form-control" ng-model="loginForm.password" type="text" name="password" placeholder="Password" /><br /><br />
+            <div class="text-center">
+                <button class="btn btn-primary" type="button" ng-click="login()" >Login</button>
+                <button class="btn btn-primary" type="button" ng-click="gotosignup()" >Sign up</button><br /><br />
+            </div>
+        </form>
+    </div>
+    <div class="col-md-4"></div>
 </div>
